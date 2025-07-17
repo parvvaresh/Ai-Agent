@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # FastAPI application service
+  app:
+    build: .
+    container_name: ai_agent_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app/app
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy # Wait until the database is healthy
+    restart: unless-stopped
+
+  # MySQL database service
+  db:
+    image: mysql:8.0
+    container_name: ai_agent_db
+    ports:
+      - "3307:3306" # Host port 3307 maps to container port 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password # Only used for initial setup
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./data/init.sql:/docker-entrypoint-initdb.d/init.sql # Initial SQL script
+      - mysql_data:/var/lib/mysql # Persistent database storage
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${DB_USER}", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  mysql_data:

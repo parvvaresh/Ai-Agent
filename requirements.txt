@@ -1,0 +1,21 @@
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+python-dotenv
+
+# SQLAlchemy and MySQL Driver
+sqlalchemy
+aiomysql
+mysql-connector-python
+
+# LangChain, LangGraph, and Google GenAI
+langchain
+langgraph
+langchain-google-genai
+langchain-community
+
+# For testing
+pytest
+httpx
+pytest-asyncio
